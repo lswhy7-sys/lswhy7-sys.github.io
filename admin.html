@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>콘텐츠 관리 | Lee Sungwoo</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0f0f0f;--bg2:#161616;--card:#1c1c1c;--border:#2a2a2a;--border2:#333;--text:#e0e0e0;--muted:#777;--white:#fff;--accent:#3b82f6;--danger:#ef4444;--success:#22c55e;--warn:#f59e0b}
+body{background:var(--bg);color:var(--text);font-family:"Segoe UI",system-ui,sans-serif;font-size:13px;line-height:1.6}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#333;border-radius:4px}
+.hdr{background:var(--bg2);border-bottom:1px solid var(--border);padding:.9rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200}
+.hdr h1{font-size:1.1rem;font-weight:700;color:var(--white)}
+.hdr-r{display:flex;gap:.5rem;align-items:center}
+.sv{font-size:.72rem;color:var(--success);opacity:0;transition:.3s}.sv.on{opacity:1}
+.wrap{max-width:1200px;margin:0 auto;padding:1.5rem 2rem}
+.notice{border-left:3px solid var(--accent);border-radius:6px;padding:.8rem 1rem;margin-bottom:1.2rem;font-size:.8rem}
+.notice.blue{background:#192033;color:#93c5fd}
+.notice.green{background:#0f2a1a;color:#86efac;border-color:var(--success)}
+.notice.red{background:#2a0f0f;color:#fca5a5;border-color:var(--danger)}
+.notice.warn{background:#2a1f0a;color:#fcd34d;border-color:var(--warn)}
+.gh-setup{background:var(--card);border:1px solid var(--border2);border-radius:10px;padding:1.2rem 1.4rem;margin-bottom:1.2rem}
+.gh-setup h3{font-size:.9rem;font-weight:700;color:var(--white);margin-bottom:.8rem}
+.gh-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.7rem;margin-bottom:.6rem}
+.gh-row2{display:grid;grid-template-columns:2fr 1fr;gap:.7rem;margin-bottom:.6rem}
+.tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:1.2rem}
+.tab{background:none;border:none;color:var(--muted);padding:.6rem 1.3rem;font-size:.85rem;cursor:pointer;font-family:inherit;border-bottom:2px solid transparent;margin-bottom:-1px;transition:.2s}
+.tab.on{color:var(--white);border-bottom-color:var(--white)}.tab:hover:not(.on){color:var(--text)}
+.panel{display:none}.panel.on{display:block}
+.btn{padding:.42rem .95rem;border-radius:6px;border:none;font-size:.78rem;cursor:pointer;font-family:inherit;font-weight:500;transition:.2s;display:inline-flex;align-items:center;gap:.3rem}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.bb{background:var(--accent);color:#fff}.bb:hover:not(:disabled){background:#2563eb}
+.bg2{background:var(--success);color:#fff}.bg2:hover{background:#16a34a}
+.br{background:var(--danger);color:#fff}.br:hover{background:#dc2626}
+.bgh{background:transparent;border:1px solid var(--border);color:var(--text)}.bgh:hover:not(:disabled){border-color:#555}
+.bwarn{background:var(--warn);color:#000}.bwarn:hover{background:#d97706}
+.bsm{padding:.25rem .6rem;font-size:.72rem}.bxs{padding:.2rem .42rem;font-size:.68rem}
+.tlb{display:flex;gap:.4rem;margin-bottom:1rem;flex-wrap:wrap;align-items:center}
+.pl{display:flex;flex-direction:column;gap:.7rem}
+.pc{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.1rem 1.3rem}
+.ph{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem}
+.ptt{font-size:.98rem;font-weight:700;color:var(--white)}
+.pts{font-size:.73rem;color:var(--muted);margin-top:.1rem}
+.pb{display:flex;gap:.3rem;flex-wrap:wrap;margin:.45rem 0}
+.tg{font-size:.63rem;border:1px solid var(--border);border-radius:20px;padding:.1rem .5rem;color:var(--text)}
+.tb{background:#1b3358;border-color:#3b82f6;color:#93c5fd}
+.tgr{background:#172e17;border-color:#22c55e;color:#86efac}
+.dl{margin:.3rem 0 .6rem;padding-left:1rem}.dl li{font-size:.72rem;color:var(--muted)}
+.mi{font-size:.72rem;color:#555;margin-bottom:.6rem}
+.pa{display:flex;gap:.35rem}
+.ob{display:flex;gap:.2rem}
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:1000;align-items:flex-start;justify-content:center;padding:1.5rem 1rem;overflow-y:auto}
+.mo.on{display:flex}
+.mb{background:var(--card);border:1px solid var(--border2);border-radius:12px;width:100%;max-width:700px;padding:1.6rem 1.8rem;position:relative;margin:auto}
+.mh{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem}
+.mh h2{font-size:1rem;font-weight:700;color:var(--white)}
+.mc2{background:none;border:none;color:var(--muted);font-size:1.1rem;cursor:pointer;padding:.2rem}.mc2:hover{color:var(--white)}
+.fg{margin-bottom:.85rem}
+.fl{display:block;font-size:.75rem;color:var(--muted);margin-bottom:.25rem;font-weight:500}
+.rq{color:var(--danger)}
+.fi,.fs,.ft{width:100%;background:#181818;border:1px solid var(--border);border-radius:6px;color:var(--text);padding:.5rem .8rem;font-size:.8rem;font-family:inherit;outline:none;transition:.2s}
+.fi:focus,.fs:focus,.ft:focus{border-color:var(--accent)}
+.fi::placeholder,.ft::placeholder{color:#444}
+.ft{resize:vertical;min-height:80px}.fs option{background:var(--card)}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.fh{font-size:.68rem;color:#444;margin-top:.18rem}
+.dw{display:flex;flex-direction:column;gap:.3rem;margin-bottom:.35rem}
+.dr{display:flex;gap:.3rem;align-items:center}.dr .fi{flex:1}
+.ms{border:1px solid var(--border);border-radius:8px;padding:.9rem 1rem;margin-bottom:.6rem}
+.msh{display:flex;align-items:center;justify-content:space-between;margin-bottom:.7rem}
+.msl{font-size:.8rem;font-weight:600;color:var(--text)}
+.mst{font-size:.65rem;background:#252525;border:1px solid #333;border-radius:4px;padding:.08rem .45rem;color:var(--muted)}
+.mr2{display:flex;gap:.2rem}
+.ew{display:flex;flex-direction:column;gap:.35rem;margin-bottom:.4rem}
+.er{display:flex;gap:.35rem}.er .fi{flex:1}
+.sk{margin-bottom:.7rem}.skl{font-size:.73rem;color:var(--muted);margin-bottom:.25rem}
+hr{border:none;border-top:1px solid var(--border);margin:.9rem 0}
+#toast{position:fixed;bottom:1.2rem;right:1.2rem;z-index:9999;background:var(--success);color:#fff;padding:.55rem 1rem;border-radius:7px;font-size:.8rem;font-weight:500;opacity:0;transform:translateY(6px);transition:.3s;pointer-events:none}
+#toast.on{opacity:1;transform:none}#toast.err{background:var(--danger)}#toast.warn{background:var(--warn);color:#000}
+</style>
+</head>
+<body>
+<header class="hdr">
+  <h1>콘텐츠 관리</h1>
+  <div class="hdr-r">
+    <span class="sv" id="svEl">✓ 저장됨</span>
+    <button class="btn bgh bsm" onclick="window.open('index.html','_blank')">☰ 메인 페이지 확인</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <!-- GitHub 설정 -->
+  <div class="gh-setup" id="ghSetup">
+    <h3>🔧 GitHub 연결 설정</h3>
+    <div id="ghStatus" class="notice blue" style="margin-bottom:.8rem">⏳ 설정을 입력하면 GitHub에 직접 저장됩니다.</div>
+    <div class="gh-row">
+      <div class="fg" style="margin:0">
+        <label class="fl">GitHub 사용자명</label>
+        <input class="fi" id="ghUser" placeholder="lswhy7-sys" value="lswhy7-sys">
+      </div>
+      <div class="fg" style="margin:0">
+        <label class="fl">저장소 이름</label>
+        <input class="fi" id="ghRepo" placeholder="lswhy7-sys.github.io" value="lswhy7-sys.github.io">
+      </div>
+      <div class="fg" style="margin:0">
+        <label class="fl">브랜치</label>
+        <input class="fi" id="ghBranch" placeholder="main" value="main">
+      </div>
+    </div>
+    <div class="gh-row2">
+      <div class="fg" style="margin:0">
+        <label class="fl">GitHub Personal Access Token <span class="rq">*</span> <span style="color:#555;font-weight:400">(repo 권한 필요)</span></label>
+        <input class="fi" id="ghToken" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+      </div>
+      <div class="fg" style="margin:0;display:flex;align-items:flex-end;gap:.4rem">
+        <button class="btn bb" onclick="connectGH()" style="flex:1">🔗 연결 확인</button>
+        <button class="btn bgh" onclick="toggleToken()">👁</button>
+      </div>
+    </div>
+    <div style="font-size:.72rem;color:#555">
+      💡 Token 발급: GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens → 
+      Repository permissions: Contents (Read and write)
+    </div>
+  </div>
+
+  <div id="statusNotice" class="notice blue">⏳ GitHub 연결 후 데이터를 불러옵니다.</div>
+
+  <div class="tabs">
+    <button class="tab on" onclick="swT('portfolio',this)">Portfolio</button>
+    <button class="tab" onclick="swT('about',this)">Resume</button>
+  </div>
+
+  <div class="panel on" id="panel-portfolio">
+    <div class="tlb">
+      <button class="btn bb" onclick="opm(-1)">＋ 새 프로젝트 추가</button>
+      <button class="btn bwarn" onclick="pushToGH()" id="pushBtn" disabled>⬆ GitHub에 저장</button>
+    </div>
+    <div class="pl" id="plEl"><p style="color:var(--muted);text-align:center;padding:2rem">GitHub 연결 후 프로젝트가 표시됩니다.</p></div>
+  </div>
+
+  <div class="panel" id="panel-about">
+    <div style="max-width:700px">
+      <div class="fg">
+        <label class="fl">전문 분야</label>
+        <div class="ew" id="expEl"></div>
+        <button class="btn bgh bsm" onclick="addE()" style="margin-top:.3rem">＋ 항목 추가</button>
+      </div>
+      <hr>
+      <div class="fg">
+        <label class="fl">기술 스택</label>
+        <div class="sk"><div class="skl">Tools (쉼표 구분)</div><input class="fi" id="aT" oninput="markDirty()"></div>
+        <div class="sk"><div class="skl">AI (쉼표 구분)</div><input class="fi" id="aI" oninput="markDirty()"></div>
+      </div>
+      <hr>
+      <div class="fg">
+        <label class="fl">연락처</label>
+        <div class="fr">
+          <div><div class="fh" style="margin-bottom:.25rem">Email</div><input class="fi" id="aEm" oninput="markDirty()"></div>
+          <div><div class="fh" style="margin-bottom:.25rem">LinkedIn URL</div><input class="fi" id="aLi" oninput="markDirty()"></div>
+        </div>
+      </div>
+      <button class="btn bwarn" onclick="pushToGH()" style="margin-top:.5rem">⬆ GitHub에 저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- PROJECT MODAL -->
+<div class="mo" id="pmo" onclick="bgc(event)">
+  <div class="mb">
+    <div class="mh"><h2 id="pmTl">프로젝트 편집</h2><button class="mc2" onclick="cmo()">✕</button></div>
+    <input type="hidden" id="pmIdx">
+    <div class="fr">
+      <div class="fg"><label class="fl">프로젝트 제목 <span class="rq">*</span></label><input class="fi" id="pmNm" placeholder="프로젝트명"></div>
+      <div class="fg"><label class="fl">회사명</label><input class="fi" id="pmCo" placeholder="회사명"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">날짜</label><input class="fi" id="pmPe" placeholder="2024.06 - 근무중"></div>
+      <div class="fg"><label class="fl">플랫폼</label><input class="fi" id="pmPl" placeholder="PC / Console"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">카테고리 <span class="rq">*</span></label>
+        <select class="fs" id="pmCa">
+          <option value="cinematic">Cinematic</option>
+          <option value="ingame">In game</option>
+          <option value="levelart">Level Art</option>
+          <option value="cinematic ingame">Cinematic + In game</option>
+          <option value="levelart ingame">Level Art + In game</option>
+        </select>
+      </div>
+      <div class="fg"><label class="fl">썸네일 경로</label><input class="fi" id="pmTh" placeholder="./folder/image.webp"></div>
+    </div>
+    <div class="fg">
+      <label class="fl">주요 업무</label>
+      <div class="dw" id="dwEl"></div>
+      <button class="btn bgh bsm" onclick="adD()" style="margin-top:.3rem">＋ 업무 추가</button>
+    </div>
+    <hr>
+    <div class="fg">
+      <label class="fl">미디어 섹션</label>
+      <div id="mdEl"></div>
+      <button class="btn bgh bsm" onclick="adM()" style="margin-top:.3rem">＋ 미디어 추가</button>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:.4rem;margin-top:.8rem">
+      <button class="btn bgh" onclick="cmo()">취소</button>
+      <button class="btn bg2" onclick="svP()">✓ 저장</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+var DP={"projects": [{"key": "bird", "title": "The Bird That Drinks Tears", "company": "Krafton Montreal & OmnicraftLabs", "period": "2024.06 - 근무중", "platform": "PC / Console", "cat": "cinematic ingame", "thumb": "./bird/windlness.webp", "duties": ["라이팅 R&D", "라이팅 툴 & 블루프린트 제작", "인게임 포스트 프로세싱 작업", "시네마틱 작업", "인테리어 익스테리어 노출 작업"], "media": [{"type": "youtube", "url": "https://www.youtube.com/watch?v=NVHg0snUBdQ"}, {"type": "youtube", "url": "https://www.youtube.com/watch?v=-XEbirJGdsw"}, {"type": "youtube", "url": "https://www.youtube.com/watch?v=5ONvoWI0IWQ"}, {"type": "youtube", "url": "https://www.youtube.com/watch?v=ztjcFMJdEn4"}, {"type": "youtube", "url": "https://www.youtube.com/watch?v=HD0dMr3kAQs"}, {"type": "slideshow", "id": "ss-bird-step1", "images": ["./bird/Step-by-step process/1-1.webp", "./bird/Step-by-step process/1-2.webp", "./bird/Step-by-step process/1-3.webp", "./bird/Step-by-step process/1-4.webp"], "count": 4}, {"type": "slideshow", "id": "ss-bird-step2", "images": ["./bird/Step-by-step process/2-1.webp", "./bird/Step-by-step process/2-2.webp", "./bird/Step-by-step process/2-3.webp", "./bird/Step-by-step process/2-4.webp"], "count": 4}, {"type": "slideshow", "id": "ss-bird-step3", "images": ["./bird/Step-by-step process/3-1.webp", "./bird/Step-by-step process/3-2.webp", "./bird/Step-by-step process/3-3.webp", "./bird/Step-by-step process/3-4.webp"], "count": 4}, {"type": "slideshow", "id": "ss-bird-step4", "images": ["./bird/Step-by-step process/4-1.webp", "./bird/Step-by-step process/4-2.webp", "./bird/Step-by-step process/4-3.webp", "./bird/Step-by-step process/4-4.webp"], "count": 4}, {"type": "slideshow", "id": "ss-bird-step5", "images": ["./bird/Step-by-step process/5-1.webp", "./bird/Step-by-step process/5-2.webp", "./bird/Step-by-step process/5-3.webp"], "count": 3}, {"type": "slideshow", "id": "ss-bird-step6", "images": ["./bird/Step-by-step process/6-2.webp", "./bird/Step-by-step process/6-3.webp", "./bird/Step-by-step process/6-4.webp"], "count": 3}, {"type": "slideshow", "id": "ss-bird-lo1", "images": ["./bird/Lighting Optimization/1-0.webp", "./bird/Lighting Optimization/1-1.webp", "./bird/Lighting Optimization/1-2.webp"], "count": 3}, {"type": "slideshow", "id": "ss-bird-lo2", "images": ["./bird/Lighting Optimization/2-0.webp", "./bird/Lighting Optimization/2-1.webp", "./bird/Lighting Optimization/2-2.webp"], "count": 3}, {"type": "slideshow", "id": "ss-bird-lo4", "images": ["./bird/Lighting Optimization/4-0.webp", "./bird/Lighting Optimization/4-1.webp", "./bird/Lighting Optimization/4-2.webp"], "count": 3}, {"type": "slideshow", "id": "ss-bird-step30", "images": ["./bird/Step-by-step process/30-1.webp", "./bird/Step-by-step process/30-2.webp", "./bird/Step-by-step process/30-3.webp"], "count": 3}, {"type": "slideshow", "id": "ss-bird-lo30", "images": ["./bird/Lighting Optimization/30-0.webp", "./bird/Lighting Optimization/30-1.webp", "./bird/Lighting Optimization/30-2.webp"], "count": 3}, {"type": "slideshow", "id": "ss-benchmark-static", "images": ["./bird/benchmark01.webp", "./bird/benchmark02.webp", "./bird/benchmark03.webp", "./bird/benchmark04.webp"], "count": 4}]}, {"key": "warhaven", "title": "WARHAVEN", "company": "NEXON KOREA", "period": "2022.12 - 2024.05", "platform": "PC / Console", "cat": "ingame", "thumb": "./warhaven/war.webp", "duties": ["라이팅 R&D", "인게임 내 모든 라이팅 작업", "컷씬 작업", "인테리어 익스테리어 노출 작업", "프로필 카드 라이팅 작업"], "media": [{"type": "youtube", "url": "https://www.youtube.com/watch?v=B3yDcONgdQk"}, {"type": "youtube", "url": "https://www.youtube.com/watch?v=Wo2TYe7rA6g"}, {"type": "slideshow", "id": "ss-wh-muwon", "images": ["./warhaven/muwon/1.webp", "./warhaven/muwon/2.webp", "./warhaven/muwon/3.webp", "./warhaven/muwon/4.webp", "./warhaven/muwon/5.webp", "./warhaven/muwon/6.webp", "./warhaven/muwon/7.webp", "./warhaven/muwon/8.webp", "./warhaven/muwon/9.webp", "./warhaven/muwon/10.webp", "./warhaven/muwon/11.webp", "./warhaven/muwon/12.webp", "./warhaven/muwon/13.webp", "./warhaven/muwon/14.webp", "./warhaven/muwon/15.webp", "./warhaven/muwon/16.webp", "./warhaven/muwon/17.webp"], "count": 17}, {"type": "slideshow", "id": "ss-wh-spring", "images": ["./warhaven/spring/17.webp", "./warhaven/spring/16.webp", "./warhaven/spring/5.webp", "./warhaven/spring/6.webp", "./warhaven/spring/7.webp", "./warhaven/spring/8.webp", "./warhaven/spring/9.webp", "./warhaven/spring/10.webp", "./warhaven/spring/11.webp", "./warhaven/spring/12.webp", "./warhaven/spring/13.webp", "./warhaven/spring/14.webp", "./warhaven/spring/15.webp", "./warhaven/spring/18.webp", "./warhaven/spring/19.webp", "./warhaven/spring/20.webp", "./warhaven/spring/1.webp", "./warhaven/spring/2.webp", "./warhaven/spring/3.webp", "./warhaven/spring/4.webp"], "count": 20}, {"type": "slideshow", "id": "ss-wh-waiting", "images": ["./warhaven/waiting/01.webp", "./warhaven/waiting/02.webp", "./warhaven/waiting/03.webp", "./warhaven/waiting/04.webp", "./warhaven/waiting/05.webp", "./warhaven/waiting/06.webp", "./warhaven/waiting/07.webp", "./warhaven/waiting/08.webp"], "count": 8}, {"type": "slideshow", "id": "ss-wh-gym", "images": ["./warhaven/gym/01.webp", "./warhaven/gym/02.webp", "./warhaven/gym/03.webp", "./warhaven/gym/04.webp"], "count": 4}, {"type": "slideshow", "id": "ss-wh-photo-saber", "images": ["./warhaven/photo/1.webp", "./warhaven/photo/2.webp", "./warhaven/photo/3.webp", "./warhaven/photo/4.webp", "./warhaven/photo/5.webp", "./warhaven/photo/6.webp", "./warhaven/photo/7.webp", "./warhaven/photo/8.webp", "./warhaven/photo/9.webp", "./warhaven/photo/10.webp"], "count": 10}, {"type": "slideshow", "id": "ss-wh-worldpass-map", "images": ["./warhaven/worldpass/01.webp", "./warhaven/worldpass/02.webp", "./warhaven/worldpass/03.webp"], "count": 3}, {"type": "slideshow", "id": "ss-wh-worldpass-polish", "images": ["./warhaven/worldpass/04.webp", "./warhaven/worldpass/05.webp"], "count": 2}]}, {"key": "stellar", "title": "Stellar Blade", "company": "SHIFTUP", "period": "2021.11 - 2022.12", "platform": "PC / Console", "cat": "levelart", "thumb": "./stellar/stellar.webp", "duties": ["담당 레벨 구역 배치", "터레인 작업", "에셋 폴리싱 (PS4에서 PS5 기준으로)", "레벨 최적화", "추가 레벨 아트 작업", "텍스쳐 폴리싱"], "media": [{"type": "youtube", "url": "https://www.youtube.com/watch?v=qoZma_mPvCQ"}, {"type": "youtube", "url": "https://www.youtube.com/watch?v=r-a8AjneHBo"}, {"type": "youtube", "url": "https://www.youtube.com/watch?v=f4wVJSc-HpM"}, {"type": "slideshow", "id": "ss-sb-beach", "images": ["./stellar/beach/07.webp", "./stellar/beach/04.webp", "./stellar/beach/05.webp", "./stellar/beach/06.webp", "./stellar/beach/01.webp", "./stellar/beach/02.webp", "./stellar/beach/03.webp"], "count": 7}, {"type": "slideshow", "id": "ss-sb-xion-in", "images": ["./stellar/xion_in/00.webp", "./stellar/xion_in/01.webp", "./stellar/xion_in/02.webp", "./stellar/xion_in/03.webp", "./stellar/xion_in/04.webp", "./stellar/xion_in/05.webp", "./stellar/xion_in/06.webp", "./stellar/xion_in/07.webp"], "count": 8}, {"type": "slideshow", "id": "ss-sb-xion-out", "images": ["./stellar/xion_out/01.webp", "./stellar/xion_out/02.webp", "./stellar/xion_out/03.webp", "./stellar/xion_out/04.webp", "./stellar/xion_out/05.webp", "./stellar/xion_out/06.webp", "./stellar/xion_out/08.webp", "./stellar/xion_out/09.webp", "./stellar/xion_out/10.webp", "./stellar/xion_out/11.webp", "./stellar/xion_out/12.webp", "./stellar/xion_out/13.webp", "./stellar/xion_out/14.webp"], "count": 13}, {"type": "slideshow", "id": "ss-sb-adocs", "images": ["./stellar/adocs/0.webp", "./stellar/adocs/1.webp", "./stellar/adocs/2.webp", "./stellar/adocs/3.webp", "./stellar/adocs/4.webp", "./stellar/adocs/5.webp", "./stellar/adocs/6.webp", "./stellar/adocs/7.webp", "./stellar/adocs/8.webp", "./stellar/adocs/9.webp", "./stellar/adocs/10.webp", "./stellar/adocs/11.webp", "./stellar/adocs/12.webp", "./stellar/adocs/13.webp", "./stellar/adocs/14.webp", "./stellar/adocs/15.webp", "./stellar/adocs/16.webp", "./stellar/adocs/17.webp", "./stellar/adocs/18.webp", "./stellar/adocs/19.webp", "./stellar/adocs/20.webp", "./stellar/adocs/21.webp", "./stellar/adocs/22.webp", "./stellar/adocs/23.webp", "./stellar/adocs/24.webp", "./stellar/adocs/25.webp", "./stellar/adocs/26.webp", "./stellar/adocs/27.webp", "./stellar/adocs/28.webp", "./stellar/adocs/29.webp", "./stellar/adocs/30.webp", "./stellar/adocs/31.webp", "./stellar/adocs/32.webp", "./stellar/adocs/33.webp"], "count": 34}]}, {"key": "v4", "title": "V4", "company": "NEXON GAMES", "period": "2020.07 - 2021.07", "platform": "PC / Mobile", "cat": "levelart", "thumb": "./v4/v4.webp", "duties": ["담당 레벨 구역 배치", "터레인 작업", "레벨 최적화", "추가 레벨 아트 작업", "텍스쳐 폴리싱", "로딩 이미지 스크린샷 작업"], "media": [{"type": "youtube", "url": "https://www.youtube.com/watch?v=Z3EOL9GDO18"}, {"type": "slideshow", "id": "ss-v4-ingame", "images": ["./v4/ingame/5.webp", "./v4/ingame/6.webp", "./v4/ingame/7.webp", "./v4/ingame/8.webp", "./v4/ingame/4.webp", "./v4/ingame/9.webp", "./v4/ingame/10.webp", "./v4/ingame/11.webp", "./v4/ingame/12.webp", "./v4/ingame/13.webp", "./v4/ingame/14.webp", "./v4/ingame/15.webp", "./v4/ingame/16.webp", "./v4/ingame/17.webp", "./v4/ingame/18.webp", "./v4/ingame/19.webp", "./v4/ingame/20.webp", "./v4/ingame/21.webp", "./v4/ingame/22.webp", "./v4/ingame/23.webp", "./v4/ingame/24.webp", "./v4/ingame/25.webp", "./v4/ingame/26.webp", "./v4/ingame/1.webp", "./v4/ingame/2.webp", "./v4/ingame/3.webp"], "count": 26}, {"type": "slideshow", "id": "ss-v4-loading", "images": ["./v4/loading scene/11.webp", "./v4/loading scene/2.webp", "./v4/loading scene/3.webp", "./v4/loading scene/4.webp", "./v4/loading scene/5.webp", "./v4/loading scene/6.webp", "./v4/loading scene/7.webp", "./v4/loading scene/8.webp", "./v4/loading scene/9.webp", "./v4/loading scene/10.webp", "./v4/loading scene/12.webp", "./v4/loading scene/13.webp", "./v4/loading scene/14.webp", "./v4/loading scene/15.webp", "./v4/loading scene/16.webp", "./v4/loading scene/17.webp", "./v4/loading scene/18.webp", "./v4/loading scene/19.webp", "./v4/loading scene/1.webp"], "count": 19}]}, {"key": "mirm", "title": "MIR M", "company": "Wemade Entertainment", "period": "2018.02 - 2020.06", "platform": "PC / Mobile", "cat": "levelart ingame", "thumb": "./mir/mir.webp", "duties": ["담당 레벨 구역 배치", "터레인 작업", "레벨 최적화", "추가 레벨 아트 작업", "텍스쳐 폴리싱", "각 담당 맵 라이팅"], "media": [{"type": "youtube", "url": "https://www.youtube.com/watch?v=fergu1wHGpw"}, {"type": "youtube", "url": "https://www.youtube.com/watch?v=jPagL8R5O0I"}, {"type": "slideshow", "id": "ss-mirm-ingame", "images": ["./mir/ingame/17.webp", "./mir/ingame/18.webp", "./mir/ingame/19.webp", "./mir/ingame/20.webp", "./mir/ingame/8.jpg", "./mir/ingame/9.jpg", "./mir/ingame/10.webp", "./mir/ingame/11.webp", "./mir/ingame/12.webp", "./mir/ingame/13.webp", "./mir/ingame/14.webp", "./mir/ingame/15.webp", "./mir/ingame/16.webp", "./mir/ingame/21.webp", "./mir/ingame/22.webp", "./mir/ingame/4.webp", "./mir/ingame/5.webp", "./mir/ingame/6.webp", "./mir/ingame/7.webp"], "count": 19}]}], "about": {"expertise": ["라이팅 관련 블루프린트 위젯 툴 제작", "프로파일링 최적화", "AI 활용", "인게임 오픈월드 라이팅", "서브레벨 기반 라이팅", "시네마틱 라이팅"], "skillTools": ["Unreal Engine", "3ds Max", "Photoshop", "Substance Painter", "Substance Designer", "ZBrush", "World Machine", "3D Coat"], "skillAI": ["Claude Code", "Cursor AI", "Gemini"], "contactEmail": "lswhy7@naver.com", "contactLinkedin": "https://www.linkedin.com/in/sparky-l-1495a7139/"}};
+
+var proj=[], ab={}, _d=[], _m=[], _dirty=false;
+var GH={user:"",repo:"",branch:"main",token:"",sha:""};
+var JSON_PATH="portfolio.json";
+
+// ── GITHUB ─────────────────────────────────────────────
+function loadGHConfig(){
+  GH.user   = localStorage.getItem("gh_user")   || "lswhy7-sys";
+  GH.repo   = localStorage.getItem("gh_repo")   || "lswhy7-sys.github.io";
+  GH.branch = localStorage.getItem("gh_branch") || "main";
+  GH.token  = localStorage.getItem("gh_token")  || "";
+  document.getElementById("ghUser").value   = GH.user;
+  document.getElementById("ghRepo").value   = GH.repo;
+  document.getElementById("ghBranch").value = GH.branch;
+  document.getElementById("ghToken").value  = GH.token;
+  if(GH.token) connectGH();
+}
+
+async function connectGH(){
+  GH.user   = document.getElementById("ghUser").value.trim();
+  GH.repo   = document.getElementById("ghRepo").value.trim();
+  GH.branch = document.getElementById("ghBranch").value.trim();
+  GH.token  = document.getElementById("ghToken").value.trim();
+  localStorage.setItem("gh_user", GH.user);
+  localStorage.setItem("gh_repo", GH.repo);
+  localStorage.setItem("gh_branch", GH.branch);
+  localStorage.setItem("gh_token", GH.token);
+
+  var st = document.getElementById("ghStatus");
+  st.className = "notice blue";
+  st.textContent = "⏳ 연결 중...";
+
+  try {
+    var data = await ghGet();
+    if(data){
+      st.className = "notice green";
+      st.textContent = "✅ 연결됨! portfolio.json을 불러왔습니다.";
+      document.getElementById("statusNotice").className = "notice green";
+      document.getElementById("statusNotice").textContent = "✅ GitHub 연결됨. 변경 후 [GitHub에 저장] 버튼을 누르세요.";
+      document.getElementById("pushBtn").disabled = false;
+      var content = JSON.parse(atob(data.content.split("\n").join("")));
+      GH.sha = data.sha;
+      proj = content.projects || JSON.parse(JSON.stringify(DP.projects));
+      ab   = content.about    || JSON.parse(JSON.stringify(DP.about));
+      rPL(); rAB();
+    }
+  } catch(e) {
+    // portfolio.json 없으면 기본값 사용
+    if(e.message && e.message.indexOf("404") !== -1){
+      st.className = "notice warn";
+      st.textContent = "⚠️ portfolio.json 없음 → 기본값으로 시작합니다. [GitHub에 저장]으로 파일을 생성하세요.";
+      document.getElementById("statusNotice").className = "notice warn";
+      document.getElementById("statusNotice").textContent = "⚠️ portfolio.json이 없습니다. 편집 후 [GitHub에 저장]을 눌러 파일을 생성하세요.";
+      document.getElementById("pushBtn").disabled = false;
+      GH.sha = "";
+      proj = JSON.parse(JSON.stringify(DP.projects));
+      ab   = JSON.parse(JSON.stringify(DP.about));
+      rPL(); rAB();
+    } else {
+      st.className = "notice red";
+      st.textContent = "❌ 연결 실패: " + e.message + " (Token 권한 또는 저장소명 확인)";
+    }
+  }
+}
+
+async function ghGet(){
+  var url = "https://api.github.com/repos/"+GH.user+"/"+GH.repo+"/contents/"+JSON_PATH+"?ref="+GH.branch;
+  var r = await fetch(url, {headers:{"Authorization":"Bearer "+GH.token,"Accept":"application/vnd.github.v3+json"}});
+  if(!r.ok){
+    var err = await r.json();
+    throw new Error(r.status+" "+JSON.stringify(err.message));
+  }
+  return r.json();
+}
+
+async function pushToGH(){
+  if(!GH.token){ toast("먼저 GitHub Token을 입력하세요.","err"); return; }
+  var btn = document.getElementById("pushBtn");
+  btn.disabled = true;
+  btn.textContent = "⏳ 저장 중...";
+
+  // About 최신값 수집
+  ab.skillTools = document.getElementById("aT").value.split(",").map(function(s){return s.trim();}).filter(Boolean);
+  ab.skillAI    = document.getElementById("aI").value.split(",").map(function(s){return s.trim();}).filter(Boolean);
+  ab.contactEmail   = document.getElementById("aEm").value.trim();
+  ab.contactLinkedin= document.getElementById("aLi").value.trim();
+
+  var content = {projects: proj, about: ab};
+  var encoded = btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2))));
+
+  var body = {
+    message: "Update portfolio.json via admin panel",
+    content: encoded,
+    branch: GH.branch
+  };
+  if(GH.sha) body.sha = GH.sha;
+
+  try{
+    var url = "https://api.github.com/repos/"+GH.user+"/"+GH.repo+"/contents/"+JSON_PATH;
+    var r = await fetch(url, {
+      method: "PUT",
+      headers: {"Authorization":"Bearer "+GH.token,"Content-Type":"application/json","Accept":"application/vnd.github.v3+json"},
+      body: JSON.stringify(body)
+    });
+    if(!r.ok){
+      var err = await r.json();
+      throw new Error(err.message);
+    }
+    var res = await r.json();
+    GH.sha = res.content.sha;
+    _dirty = false;
+    showSv();
+    toast("✅ GitHub에 저장됐습니다! 잠시 후 홈페이지에 반영됩니다.");
+    document.getElementById("statusNotice").className = "notice green";
+    document.getElementById("statusNotice").textContent = "✅ 저장 완료! GitHub Pages 배포 후 홈페이지에 반영됩니다.";
+  } catch(e){
+    toast("저장 실패: "+e.message,"err");
+  }
+  btn.disabled = false;
+  btn.textContent = "⬆ GitHub에 저장";
+}
+
+function toggleToken(){
+  var el = document.getElementById("ghToken");
+  el.type = el.type === "password" ? "text" : "password";
+}
+
+// ── RENDER ─────────────────────────────────────────────
+function cL(c){
+  return c.split(" ").map(function(v){ return {cinematic:"Cinematic",ingame:"In game",levelart:"Level Art"}[v]||v; }).join(" + ");
+}
+function rPL(){
+  var el=document.getElementById("plEl");
+  el.innerHTML="";
+  if(!proj.length){ el.innerHTML="<p style='color:var(--muted);text-align:center;padding:2rem'>프로젝트 없음</p>"; return; }
+  proj.forEach(function(p,i){
+    var yc=(p.media||[]).filter(function(m){return m.type==="youtube";}).length;
+    var sc=(p.media||[]).filter(function(m){return m.type==="slideshow";}).length;
+    var mi=[]; if(yc) mi.push("YouTube "+yc+"개"); if(sc) mi.push("슬라이드쇼 "+sc+"개");
+    var d1=i===0?" disabled":""; var d2=i===proj.length-1?" disabled":"";
+    el.innerHTML+=
+      "<div class='pc'>"+
+        "<div class='ph'>"+
+          "<div><div class='ptt'>"+xe(p.title)+"</div>"+
+          "<div class='pts'>"+xe(p.company)+" · "+xe(p.period)+"</div></div>"+
+          "<div class='ob'>"+
+            "<button class='btn bgh bxs' onclick='mv("+i+",-1)'"+d1+">↑</button>"+
+            "<button class='btn bgh bxs' onclick='mv("+i+",1)'"+d2+">↓</button>"+
+          "</div>"+
+        "</div>"+
+        "<div class='pb'><span class='tg tb'>Professional</span><span class='tg'>"+xe(p.platform)+"</span><span class='tg tgr'>"+cL(p.cat)+"</span></div>"+
+        "<ul class='dl'>"+p.duties.map(function(d){return "<li>"+xe(d)+"</li>";}).join("")+"</ul>"+
+        (mi.length?"<div class='mi'>📎 "+mi.join(", ")+"</div>":"")+
+        "<div class='pa'><button class='btn bgh bsm' onclick='opm("+i+")'>편집</button><button class='btn br bsm' onclick='dlP("+i+")'>삭제</button></div>"+
+      "</div>";
+  });
+}
+function mv(i,d){ var n=i+d; if(n<0||n>=proj.length) return; var t=proj[i];proj[i]=proj[n];proj[n]=t; rPL(); markDirty(); toast("순서 변경됨 — [GitHub에 저장] 을 눌러 적용하세요.","warn"); }
+function dlP(i){ if(!confirm('"'+proj[i].title+'"을 삭제할까요?')) return; proj.splice(i,1); rPL(); markDirty(); toast("삭제됨 — [GitHub에 저장]을 눌러 적용하세요.","warn"); }
+
+// ── MODAL ──────────────────────────────────────────────
+function opm(i){
+  var p=i>=0?proj[i]:{key:"",title:"",company:"",period:"",platform:"PC / Console",cat:"ingame",thumb:"",duties:[],media:[]};
+  document.getElementById("pmTl").textContent=i>=0?"프로젝트 편집":"새 프로젝트 추가";
+  document.getElementById("pmIdx").value=i;
+  document.getElementById("pmNm").value=p.title;
+  document.getElementById("pmCo").value=p.company;
+  document.getElementById("pmPe").value=p.period;
+  document.getElementById("pmPl").value=p.platform;
+  document.getElementById("pmCa").value=p.cat;
+  document.getElementById("pmTh").value=p.thumb;
+  _d=p.duties.slice();
+  _m=(p.media||[]).map(function(m){ return JSON.parse(JSON.stringify(m)); });
+  rDW(); rMD();
+  document.getElementById("pmo").classList.add("on");
+  document.body.style.overflow="hidden";
+}
+function cmo(){ document.getElementById("pmo").classList.remove("on"); document.body.style.overflow=""; }
+function bgc(e){ if(e.target===document.getElementById("pmo")) cmo(); }
+document.addEventListener("keydown",function(e){ if(e.key==="Escape"){ document.querySelectorAll(".mo.on").forEach(function(m){m.classList.remove("on");}); document.body.style.overflow=""; }});
+
+function rDW(){
+  var el=document.getElementById("dwEl"); el.innerHTML="";
+  _d.forEach(function(d,i){
+    el.innerHTML+="<div class='dr'><input class='fi' value='"+xe(d)+"' oninput='_d["+i+"]=this.value' placeholder='업무 항목'><button class='btn br bxs' onclick='rmD("+i+")'>삭제</button></div>";
+  });
+}
+function adD(){ _d.push(""); rDW(); setTimeout(function(){ var e=document.querySelectorAll(".dr .fi"); if(e.length) e[e.length-1].focus(); },40); }
+function rmD(i){ _d.splice(i,1); rDW(); }
+
+function rMD(){
+  var el=document.getElementById("mdEl"); el.innerHTML="";
+  _m.forEach(function(m,i){
+    var isY=(m.type==="youtube");
+    var uv=isY?(m.url||""):(m.images||[]).join(", ");
+    var ph=isY?"https://www.youtube.com/watch?v=...":"./folder/1.webp, ./folder/2.webp";
+    var lb=isY?"URL (YouTube)":"URL (이미지 경로, 쉼표 구분)";
+    var d1=i===0?" disabled":""; var d2=i===_m.length-1?" disabled":"";
+    el.innerHTML+=
+      "<div class='ms'>"+
+        "<div class='msh'><span class='msl'>"+(isY?"영상":"갤러리 (슬라이드쇼)")+"</span>"+
+          "<div style='display:flex;gap:.3rem;align-items:center'><span class='mst'>"+(i+1)+"</span>"+
+            "<div class='mr2'><button class='btn bgh bxs' onclick='mvM("+i+",-1)'"+d1+">↑</button><button class='btn bgh bxs' onclick='mvM("+i+",1)'"+d2+">↓</button></div>"+
+            "<button class='btn br bxs' onclick='rmM("+i+")'>삭제</button></div></div>"+
+        "<div class='fg'><label class='fl'>타입</label>"+
+          "<select class='fs' onchange='chT("+i+",this.value)'>"+
+            "<option value='youtube'"+(isY?" selected":"")+">영상</option>"+
+            "<option value='slideshow'"+(!isY?" selected":"")+">갤러리 (슬라이드쇼)</option>"+
+          "</select></div>"+
+        "<div class='fg'><label class='fl'>"+lb+"</label>"+
+          "<input class='fi' value='"+xe(uv)+"' data-i='"+i+"' data-t='"+(isY?"y":"s")+"' oninput='upU(this)' placeholder='"+ph+"'/></div>"+
+      "</div>";
+  });
+}
+function adM(){ _m.push({type:"youtube",url:""}); rMD(); }
+function rmM(i){ _m.splice(i,1); rMD(); }
+function mvM(i,d){ var n=i+d; if(n<0||n>=_m.length) return; var t=_m[i];_m[i]=_m[n];_m[n]=t; rMD(); }
+function chT(i,t){ _m[i]=(t==="youtube"?{type:"youtube",url:""}:{type:"slideshow",images:[]}); rMD(); }
+function upU(el){
+  var i=parseInt(el.getAttribute("data-i"));
+  var t=el.getAttribute("data-t");
+  if(t==="y"){ _m[i].url=el.value.trim(); }
+  else{ _m[i].images=el.value.split(",").map(function(s){return s.trim();}).filter(Boolean); }
+}
+function svP(){
+  var nm=document.getElementById("pmNm").value.trim();
+  if(!nm){ toast("제목을 입력하세요.","err"); return; }
+  var cat=document.getElementById("pmCa").value;
+  var pl=document.getElementById("pmPl").value.trim();
+  var tags=[pl];
+  if(cat.indexOf("ingame")!==-1) tags.push("In game");
+  if(cat.indexOf("cinematic")!==-1) tags.push("Cinematic");
+  if(cat.indexOf("levelart")!==-1) tags.push("Level Art");
+  var obj={
+    key:nm.toLowerCase().replace(/[^a-z0-9]/g,"_").replace(/__+/g,"_").slice(0,20),
+    title:nm, company:document.getElementById("pmCo").value.trim(),
+    period:document.getElementById("pmPe").value.trim(),
+    platform:pl, cat:cat, thumb:document.getElementById("pmTh").value.trim(),
+    duties:_d.filter(function(v){return v.trim();}), media:_m, modalTags:tags
+  };
+  var idx=parseInt(document.getElementById("pmIdx").value);
+  if(idx<0){ proj.push(obj); }
+  else{ proj[idx]=obj; }
+  cmo(); rPL(); markDirty();
+  toast("편집됨 — [GitHub에 저장]을 눌러 적용하세요.","warn");
+}
+
+// ── ABOUT ──────────────────────────────────────────────
+function rAB(){
+  var el=document.getElementById("expEl"); el.innerHTML="";
+  ab.expertise.forEach(function(e,i){
+    el.innerHTML+="<div class='er'><input class='fi' value='"+xe(e)+"' oninput='ab.expertise["+i+"]=this.value;markDirty()' placeholder='전문 분야'><button class='btn br bxs' onclick='rmE("+i+")'>삭제</button></div>";
+  });
+  document.getElementById("aT").value=(ab.skillTools||[]).join(", ");
+  document.getElementById("aI").value=(ab.skillAI||[]).join(", ");
+  document.getElementById("aEm").value=ab.contactEmail||"";
+  document.getElementById("aLi").value=ab.contactLinkedin||"";
+}
+function addE(){ ab.expertise.push(""); rAB(); markDirty(); }
+function rmE(i){ ab.expertise.splice(i,1); rAB(); markDirty(); }
+
+// ── UTILS ──────────────────────────────────────────────
+function markDirty(){ _dirty=true; }
+function showSv(){
+  var e=document.getElementById("svEl");
+  e.classList.add("on");
+  clearTimeout(e._t);
+  e._t=setTimeout(function(){ e.classList.remove("on"); },2500);
+}
+function swT(n,b){
+  document.querySelectorAll(".tab").forEach(function(t){t.classList.remove("on");});
+  document.querySelectorAll(".panel").forEach(function(p){p.classList.remove("on");});
+  b.classList.add("on");
+  document.getElementById("panel-"+n).classList.add("on");
+}
+function xe(s){ return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function toast(msg,type){
+  var t=document.getElementById("toast");
+  t.textContent=msg; t.className="on"+(type?" "+type:"");
+  clearTimeout(t._t); t._t=setTimeout(function(){t.className="";},3000);
+}
+
+// ── INIT ───────────────────────────────────────────────
+loadGHConfig();
+</script>
+</body>
+</html>
