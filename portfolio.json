@@ -557,6 +557,21 @@
           "count": 19
         }
       ]
+    },
+    {
+      "key": "lighting_tool",
+      "title": "LIGHTING TOOL",
+      "company": "",
+      "period": "",
+      "platform": "Tool Development",
+      "cat": "ingame",
+      "thumb": "",
+      "duties": [],
+      "media": [],
+      "modalTags": [
+        "Tool Development",
+        "In game"
+      ]
     }
   ],
   "about": {
